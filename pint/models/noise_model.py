@@ -42,7 +42,6 @@ class ScaleToaError(NoiseComponent):
                                                   " the unit of log10(second)."))
         self.covariance_matrix_funcs += [self.sigma_scaled_cov_matrix, ]
         self.scaled_sigma_funcs += [self.scale_sigma, ]
-        self.set_special_params(['EFAC1', 'EQUAD1', 'TNEQ1'])
 
     def setup(self):
         super(ScaleToaError, self).setup()
@@ -148,7 +147,7 @@ class EcorrNoise(NoiseComponent):
 
         self.covariance_matrix_funcs += [self.ecorr_cov_matrix, ]
         self.basis_funcs += [self.ecorr_basis_prior_pair, ]
-        self.set_special_params(['ECORR1'])
+
     def setup(self):
         super(EcorrNoise, self).setup()
         # Get all the EFAC parameters and EQUAD
