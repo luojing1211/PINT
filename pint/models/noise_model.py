@@ -9,7 +9,6 @@ import astropy.units as u
 class NoiseComponent(Component):
     def __init__(self,):
         super(NoiseComponent, self).__init__()
-        self.category = 'timing_noise'
         self.covariance_matrix_funcs = []
         self.scaled_sigma_funcs = []
         self.basis_funcs = []
@@ -23,6 +22,7 @@ class ScaleToaError(NoiseComponent):
     register = True
     def __init__(self,):
         super(ScaleToaError, self).__init__()
+        self.category = 'scale_toa_error'
         self.add_param(p.maskParameter(name ='EFAC', units="",
                                        aliases=['T2EFAC', 'TNEFAC'],
                                        description="A multiplication factor on" \
@@ -42,6 +42,7 @@ class ScaleToaError(NoiseComponent):
                                                   " the unit of log10(second)."))
         self.covariance_matrix_funcs += [self.sigma_scaled_cov_matrix, ]
         self.scaled_sigma_funcs += [self.scale_sigma, ]
+        self.set_special_params(['EFAC1', 'EQUAD1', 'TNEQ1'])
 
     def setup(self):
         super(ScaleToaError, self).setup()
@@ -137,6 +138,7 @@ class EcorrNoise(NoiseComponent):
     register = True
     def __init__(self,):
         super(EcorrNoise, self).__init__()
+        self.category = 'ecorr_noise'
         self.add_param(p.maskParameter(name='ECORR', units="us",\
                                        aliases=['TNECORR'],
                                        description="An error term added that"\
@@ -146,7 +148,7 @@ class EcorrNoise(NoiseComponent):
 
         self.covariance_matrix_funcs += [self.ecorr_cov_matrix, ]
         self.basis_funcs += [self.ecorr_basis_prior_pair, ]
-
+        self.set_special_params(['ECORR1'])
     def setup(self):
         super(EcorrNoise, self).setup()
         # Get all the EFAC parameters and EQUAD
