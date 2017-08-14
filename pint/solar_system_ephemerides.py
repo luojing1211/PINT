@@ -14,6 +14,7 @@ try:
 except ImportError:
     from astropy._erfa import DAYSEC as SECS_PER_DAY
 
+jpl_kernel_naif = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/'
 jpl_kernel_http = 'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/a_old_versions/'
 jpl_kernel_ftp = 'ftp://ssd.jpl.nasa.gov/pub/eph/planets/bsp/'
 
@@ -34,7 +35,7 @@ jpl_obj_code = {'ssb': 0,
 
 def _load_kernel_link(ephem, link=''):
     load_kernel = False # a flag for checking if the kernel has been loaded
-    search_list = [link, jpl_kernel_http, jpl_kernel_ftp]
+    search_list = [link, jpl_kernel_naif, jpl_kernel_http, jpl_kernel_ftp]
     if link != '':
         search_list.append('')
     for l in search_list:
