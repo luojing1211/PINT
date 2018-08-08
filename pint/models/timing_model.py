@@ -858,6 +858,27 @@ class TimingModel(object):
 
         return result_begin + result_middle + result_end
 
+    def update_TZR(self, toas):
+        """
+        This is a function to update the zero phase's reference time, frequency,
+        and the observator.
+        """
+        # Check if the TZR model in the phase components list.
+        # If absolute phase is not in the timing model
+        if 'AbsPhase' not in list(self.components.keys()):
+            from .absolute_phase import AbsPhase
+            self.add_component(AbsPhase())
+
+        # get the center time of the observation
+        # TODO add the START and FINISH parameter
+        mjds = toas.get_mjd()
+        center_time = (mjds.max() - mjds.min()) / 2.0
+        closest_toa = (np.abs(mjds - center_time)).min()
+
+
+
+
+
 class ModelMeta(abc.ABCMeta):
     """
     This is a Meta class for timing model registration. In order to get a
