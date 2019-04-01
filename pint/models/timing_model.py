@@ -424,6 +424,7 @@ class TimingModel(object):
                 param_type.upper() == par_prefix.upper():
                 result.append(par.name)
         return result
+
     def get_prefix_mapping(self, prefix):
         """Get the index mapping for the prefix parameters.
            Parameter
@@ -635,7 +636,8 @@ class TimingModel(object):
         # Is it safe to assume that any param affecting delay only affects
         # phase indirectly (and vice-versa)??
         par = getattr(self, param)
-        result = np.longdouble(np.zeros(toas.ntoas)) * u.cycle/par.units
+        result = np.longdouble(np.zeros(toas.ntoas))
+        result = u.Quantity(result, (u.cycle/par.units), copy=False)
         param_phase_derivs = []
         phase_derivs = self.phase_deriv_funcs
         delay_derivs = self.delay_deriv_funcs
@@ -652,7 +654,9 @@ class TimingModel(object):
             #                         d_delay_d_param
 
             d_delay_d_p = self.d_delay_d_param(toas, param)
-            dpdd_result = np.longdouble(np.zeros(toas.ntoas)) * u.cycle/u.second
+            dpdd_result = np.longdouble(np.zeros(toas.ntoas))
+            dpdd_result = u.Quantity(dpdd_result, (u.cycle/u.second),
+                                     copy=False)
             for dpddf in self.d_phase_d_delay_funcs:
                 dpdd_result += dpddf(toas, delay)
             result = dpdd_result * d_delay_d_p
@@ -663,7 +667,8 @@ class TimingModel(object):
         Return the derivative of delay with respect to the parameter.
         """
         par = getattr(self, param)
-        result = np.longdouble(np.zeros(toas.ntoas) * u.s/par.units)
+        result = np.zeros(toas.ntoas, dtype=np.longdouble)
+        result = u.Quantity(result, (u.s/par.units), copy=False)
         delay_derivs = self.delay_deriv_funcs
         if param not in list(delay_derivs.keys()):
             raise AttributeError("Derivative function for '%s' is not provided"
@@ -726,7 +731,7 @@ class TimingModel(object):
                 raise
         d_delay = (-delay[:,0] + delay[:,1])/2.0/h
         par.value = ori_value
-        return d_delay * (u.second/unit)
+        return u.Quantity(d_delay, (u.second/unit), copy=False)
 
     def designmatrix(self, toas, acc_delay=None, scale_by_F0=True, \
                      incfrozen=False, incoffset=True):
@@ -791,12 +796,12 @@ class TimingModel(object):
 
             k = l.split()
             name = k[0].upper()
-            
+
             if name == 'UNITS' and len(k) > 1 and k[1] != 'TDB':
                 log.error("UNITS %s not yet supported by PINT" % k[1])
                 raise Exception("UNITS %s not yet supported by PINT" % k[1])
 
-            
+
             if name in checked_param:
                 if name in repeat_param.keys():
                     repeat_param[name] += 1
